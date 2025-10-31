@@ -4,7 +4,7 @@
 const DEV_API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 // We will fill this in later when we deploy our backend
-const PROD_API_URL = 'https://YOUR_API_SERVICE_NAME.onrender.com/api';
+const PROD_API_URL = 'https://edtechacademy-xzrs.onrender.com/api';
 
 // __DEV__ is a global variable provided by React Native/Expo.
 // It's true when running in development (e.g., 'npm run web')
