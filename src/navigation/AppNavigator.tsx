@@ -3,7 +3,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import ActivityListScreen from '../screens/ActivityListScreen';
-
+import { Logo } from '../shared/components/Logo/Logo';
 // Define the type for your stack parameters
 export type RootStackParamList = {
   ActivityList: undefined; // No parameters expected for this screen
@@ -20,7 +20,10 @@ export default function AppNavigator() {
         <Stack.Screen
           name="ActivityList"
           component={ActivityListScreen}
-          options={{ title: 'EdTech Academy' }} // This will be the header title
+          options={{
+            headerTitle: () => <Logo />,
+            headerTitleAlign: 'center', // Center the logo
+          }} // This will be the header title
         />
       </Stack.Navigator>
     </NavigationContainer>

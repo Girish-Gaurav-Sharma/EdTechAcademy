@@ -1,14 +1,14 @@
 // src/contexts/ActivityContext.tsx
 import React, { createContext, useState, useContext, useMemo, useEffect } from 'react';
-import { Activity } from '../types/activity.types';
-import { mockData } from '../data/mockData'; // Import the master list
+import type { Activity } from '../types/activity.types'; // Import the type
 import { useFilters } from './FilterContext'; // Import the filter hook
+import { fetchActivities } from '../services/api.service'; // Import our new API service
 
 // 1. Define what this context will provide
 interface ActivityContextType {
-  allActivities: Activity[];
   filteredActivities: Activity[];
   loading: boolean;
+  // We no longer provide 'allActivities' since the server handles it
 }
 
 // 2. Create the context
@@ -16,48 +16,52 @@ const ActivityContext = createContext<ActivityContextType | undefined>(undefined
 
 // 3. Create the Provider component
 export const ActivityProvider = ({ children }: { children: React.ReactNode }) => {
-  const { filters } = useFilters(); // Get current filters
-  const [loading, setLoading] = useState(false); // For future API calls
+  const { filters } = useFilters(); // Get the CURRENT filters
+  const [loading, setLoading] = useState(true);
   
-  // 4. Hold the master and filtered lists in state
-  const [allActivities] = useState<Activity[]>(mockData); // Master list
-  const [filteredActivities, setFilteredActivities] = useState<Activity[]>(allActivities);
+  // We ONLY need one list now: the list of filtered activities from the server
+  const [filteredActivities, setFilteredActivities] = useState<Activity[]>([]);
 
-  // 5. THE CORE LOGIC: This effect re-runs whenever filters change
+  // 4. THE NEW CORE LOGIC:
+  // This useEffect hook now runs whenever the 'filters' object changes.
   useEffect(() => {
-    setLoading(true);
+    // Define an async function inside the effect
+    const loadActivities = async () => {
+      setLoading(true); // Show skeleton loaders
+      
+      try {
+        // --- THIS IS THE FIX ---
+        // Map the context's FilterState to the API's ActivityFilters
+        const apiFilters = {
+          search: filters.searchQuery, // Map searchQuery -> search
+          type: filters.selectedType   // Map selectedType -> type
+        };
+        // -----------------------
+        
+        // Call our API service with the *mapped* filters object
+        const data = await fetchActivities(apiFilters);
+        
+        // Set the state directly to the pre-filtered results from the server
+        setFilteredActivities(data);
+        
+      } catch (error) {
+        console.error("Failed to load activities:", error);
+        setFilteredActivities([]); // Set to empty array on error
+      } finally {
+        setLoading(false); // Hide skeleton loaders
+      }
+    };
 
-    let activities = [...allActivities];
+    // Call the function
+    loadActivities();
+    
+  }, [filters]); // The dependency array: This effect re-runs if 'filters' changes
 
-    // Filter by Search Query
-    if (filters.searchQuery) {
-      const query = filters.searchQuery.toLowerCase();
-      activities = activities.filter(
-        a => a.title.toLowerCase().includes(query) || 
-             a.description.toLowerCase().includes(query)
-      );
-    }
-
-    // Filter by Type
-    if (filters.selectedType !== 'all') {
-      activities = activities.filter(a => a.type === filters.selectedType);
-    }
-
-    // Filter by Status
-    if (filters.selectedStatus !== 'all') {
-      activities = activities.filter(a => a.status === filters.selectedStatus);
-    }
-
-    setFilteredActivities(activities);
-    setLoading(false);
-  }, [filters, allActivities]); // Dependency array: re-run if filters change
-
-  // 6. Memoize the value to provide
+  // 5. Memoize the value to provide
   const value = useMemo(() => ({
-    allActivities,
     filteredActivities,
     loading,
-  }), [allActivities, filteredActivities, loading]);
+  }), [filteredActivities, loading]);
 
   return (
     <ActivityContext.Provider value={value}>
@@ -66,7 +70,7 @@ export const ActivityProvider = ({ children }: { children: React.ReactNode }) =>
   );
 };
 
-// 7. Create a custom hook for easy access
+// 6. Create a custom hook for easy access
 export const useActivities = () => {
   const context = useContext(ActivityContext);
   if (!context) {

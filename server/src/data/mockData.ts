@@ -1,5 +1,5 @@
 // src/data/mockData.ts
-import { Activity } from '../types/activity.types';
+import type { Activity } from '../types/activity.types.js';
 
 // Helper for dates
 const now = new Date();
