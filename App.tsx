@@ -11,6 +11,7 @@ import { API_URL } from './src/config/index';
 // --- IMPORT THE NEW THEME PROVIDER ---
 import { ThemeProvider, useThemeToggle } from './src/contexts/ThemeContext';
 import { lightTheme, darkTheme } from './src/config/theme';
+import { useEffect } from 'react';
 // This is a new helper component.
 // It sits inside ThemeProvider so it can access the theme state,
 // but outside PaperProvider so it can *pass the theme to it*.
@@ -20,6 +21,13 @@ const AppContent = () => {
   console.log(`[CONFIG] API URL is: ${API_URL}`);
   // Select the theme object based on the state
   const theme = isDarkMode ? darkTheme : lightTheme;
+
+  // Keep web page title aligned with brand
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      document.title = 'EdTech Academy';
+    }
+  }, []);
 
   return (
     <PaperProvider theme={theme}>

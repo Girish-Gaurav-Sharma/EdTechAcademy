@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "EdTechAcademy",
+    "name": "EdTech Academy",
     "slug": "EdTechAcademy",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -24,7 +24,8 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "name": "EdTech Academy",
+      "favicon": "./assets/favicon.svg"
     }
   }
 }

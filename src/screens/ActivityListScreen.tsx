@@ -2,28 +2,17 @@
 import React from 'react';
 // --- IMPORT Platform and useWindowDimensions ---
 import { StyleSheet, FlatList, View, Platform, useWindowDimensions } from 'react-native';
-import { Text, ActivityIndicator, Switch, useTheme, Button } from 'react-native-paper';
+import { Text, ActivityIndicator, useTheme, Button } from 'react-native-paper';
 import ActivityCard from '../features/activities/components/ActivityCard';
 import { Activity } from '../types/activity.types';
 import { useActivities } from '../contexts/ActivityContext';
 import FilterBar from '../features/filters/components/FilterBar/FilterBar';
-import { useThemeToggle } from '../contexts/ThemeContext';
+import SectionHeader from '../shared/components/SectionHeader';
+// Removed old theme toggle switch; header provides a modern toggle
 import { SkeletonCard } from '../features/activities/components/SkeletonCard/SkeletonCard'; // Adjust path
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFilters } from '../contexts/FilterContext'; // Adjust path
-const ThemeToggle = () => {
-  const { isDarkMode, toggleTheme } = useThemeToggle();
-  const theme = useTheme(); // Get colors from Paper
-
-  return (
-    <View style={[styles.themeToggleContainer, { backgroundColor: theme.colors.surfaceVariant }]}>
-      <Text variant="labelLarge" style={{ color: theme.colors.onSurfaceVariant }}>
-        Dark Mode
-      </Text>
-      <Switch value={isDarkMode} onValueChange={toggleTheme} />
-    </View>
-  );
-};
+// Theme toggle moved to header actions
 
 export default function ActivityListScreen() {
   const { filteredActivities, total, loading , isInitialLoad, isLoadingMore, hasMore, loadMore } = useActivities();
@@ -85,10 +74,7 @@ if (loading) {
         )}
         ListHeaderComponent={
           <>
-            <ThemeToggle />
-            <Text variant="headlineMedium" style={styles.header}>
-              Your Learning Activities
-            </Text>
+            <SectionHeader title="Your Learning Activities" />
             <FilterBar />
             {isInitialLoad && (
                 <Text style={[styles.coldStartMessage, { color: theme.colors.error }]}>
@@ -120,10 +106,7 @@ if (loading) {
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={
           <>
-            <ThemeToggle />
-            <Text variant="headlineMedium" style={styles.header}>
-              Your Learning Activities
-            </Text>
+            <SectionHeader title="Your Learning Activities" />
             <FilterBar />
             <Text variant="titleMedium" style={styles.resultsHeader}>
               Results ({filteredActivities.length} of {total})
@@ -198,11 +181,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   themeToggleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 16,
+    // deprecated: old switch-based toggle removed in favor of header icon
   },
   coldStartMessage: { 
     textAlign: 'center',

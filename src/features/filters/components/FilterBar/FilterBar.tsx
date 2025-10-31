@@ -62,7 +62,6 @@ const styles = StyleSheet.create({
   },
   filterTitle: {
     marginBottom: 8,
-    marginLeft: 4,
   },
   chip: {
     marginRight: 8,

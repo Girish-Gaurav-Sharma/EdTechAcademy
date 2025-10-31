@@ -55,6 +55,26 @@ export const lightTheme = {
             level5: '#F5F5F5',
         },
     },
+    // Subtle typography enhancements for a cleaner, more confident look
+    fonts: {
+        ...DefaultLightTheme.fonts,
+        headlineMedium: {
+            ...DefaultLightTheme.fonts.headlineMedium,
+            fontWeight: '700',
+        },
+        titleMedium: {
+            ...DefaultLightTheme.fonts.titleMedium,
+            fontWeight: '600',
+        },
+        labelLarge: {
+            ...DefaultLightTheme.fonts.labelLarge,
+            fontWeight: '600',
+        },
+        bodyLarge: {
+            ...DefaultLightTheme.fonts.bodyLarge,
+            lineHeight: (DefaultLightTheme.fonts.bodyLarge?.lineHeight as number | undefined) ?? 24,
+        },
+    },
 } as const;
 
 export const darkTheme = {
@@ -90,6 +110,26 @@ export const darkTheme = {
             level3: '#0B1220',
             level4: '#0A0F1A',
             level5: '#090E19',
+        },
+    },
+    // Mirror the font emphasis in dark mode
+    fonts: {
+        ...DefaultDarkTheme.fonts,
+        headlineMedium: {
+            ...DefaultDarkTheme.fonts.headlineMedium,
+            fontWeight: '700',
+        },
+        titleMedium: {
+            ...DefaultDarkTheme.fonts.titleMedium,
+            fontWeight: '600',
+        },
+        labelLarge: {
+            ...DefaultDarkTheme.fonts.labelLarge,
+            fontWeight: '600',
+        },
+        bodyLarge: {
+            ...DefaultDarkTheme.fonts.bodyLarge,
+            lineHeight: (DefaultDarkTheme.fonts.bodyLarge?.lineHeight as number | undefined) ?? 24,
         },
     },
 } as const;
