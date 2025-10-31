@@ -1,5 +1,5 @@
 // src/contexts/ActivityContext.tsx
-import React, { createContext, useState, useContext, useMemo, useEffect } from 'react';
+import React, { createContext, useState, useContext, useMemo, useEffect, useCallback } from 'react';
 import type { Activity } from '../types/activity.types'; // Import the type
 import { useFilters } from './FilterContext'; // Import the filter hook
 import { fetchActivities } from '../services/api.service'; // Import our new API service
@@ -7,8 +7,12 @@ import { fetchActivities } from '../services/api.service'; // Import our new API
 // 1. Define what this context will provide
 interface ActivityContextType {
   filteredActivities: Activity[];
+  total: number;
   loading: boolean;
   isInitialLoad: boolean;
+  isLoadingMore: boolean;
+  hasMore: boolean;
+  loadMore: () => Promise<void>;
 }
 
 // 2. Create the context
@@ -19,51 +23,73 @@ export const ActivityProvider = ({ children }: { children: React.ReactNode }) =>
   const { filters } = useFilters(); // Get the CURRENT filters
   const [loading, setLoading] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  // We ONLY need one list now: the list of filtered activities from the server
   const [filteredActivities, setFilteredActivities] = useState<Activity[]>([]);
+  const [total, setTotal] = useState<number>(0);
+  const [offset, setOffset] = useState<number>(0);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
+
+  const LIMIT = 12;
 
   // 4. THE NEW CORE LOGIC:
   // This useEffect hook now runs whenever the 'filters' object changes.
   useEffect(() => {
-    // Define an async function inside the effect
-    const loadActivities = async () => {
-      setLoading(true); // Show skeleton loaders
-      
+    // Reset and load first page whenever filters change
+    const loadFirstPage = async () => {
+      setLoading(true);
+      setOffset(0);
       try {
-        // --- THIS IS THE FIX ---
-        // Map the context's FilterState to the API's ActivityFilters
         const apiFilters = {
-          search: filters.searchQuery, // Map searchQuery -> search
-          type: filters.selectedType   // Map selectedType -> type
+          search: filters.searchQuery,
+          type: filters.selectedType,
         };
-        // -----------------------
-        
-        // Call our API service with the *mapped* filters object
-        const data = await fetchActivities(apiFilters);
-        
-        // Set the state directly to the pre-filtered results from the server
-        setFilteredActivities(data);
-        
+        const { items, total } = await fetchActivities(apiFilters, { limit: LIMIT, offset: 0 });
+        setFilteredActivities(items);
+        setTotal(total);
+        setOffset(items.length);
       } catch (error) {
-        console.error("Failed to load activities:", error);
-        setFilteredActivities([]); // Set to empty array on error
+        console.error('Failed to load activities:', error);
+        setFilteredActivities([]);
+        setTotal(0);
+        setOffset(0);
       } finally {
-        setLoading(false); 
-        setIsInitialLoad(false);// Hide skeleton loaders
+        setLoading(false);
+        setIsInitialLoad(false);
       }
     };
 
-    // Call the function
-    loadActivities();
-    
-  }, [filters]); // The dependency array: This effect re-runs if 'filters' changes
+    loadFirstPage();
+  }, [filters]);
+
+  const hasMore = filteredActivities.length < total;
+
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || loading || !hasMore) return;
+    setIsLoadingMore(true);
+    try {
+      const apiFilters = {
+        search: filters.searchQuery,
+        type: filters.selectedType,
+      };
+      const { items } = await fetchActivities(apiFilters, { limit: LIMIT, offset });
+      setFilteredActivities(prev => [...prev, ...items]);
+      setOffset(prev => prev + items.length);
+    } catch (error) {
+      console.error('Failed to load more activities:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [filters, isLoadingMore, loading, hasMore, offset]);
 
   // 5. Memoize the value to provide
   const value = useMemo(() => ({
     filteredActivities,
+    total,
     loading,
     isInitialLoad,
-  }), [filteredActivities, loading, isInitialLoad]);
+    isLoadingMore,
+    hasMore,
+    loadMore,
+  }), [filteredActivities, total, loading, isInitialLoad, isLoadingMore, hasMore, loadMore]);
 
   return (
     <ActivityContext.Provider value={value}>

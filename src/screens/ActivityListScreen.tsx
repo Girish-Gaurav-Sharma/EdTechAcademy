@@ -26,13 +26,13 @@ const ThemeToggle = () => {
 };
 
 export default function ActivityListScreen() {
-  const { filteredActivities, loading , isInitialLoad} = useActivities();
+  const { filteredActivities, total, loading , isInitialLoad, isLoadingMore, hasMore, loadMore } = useActivities();
 
   // --- START: RESPONSIVENESS LOGIC ---
   const { width } = useWindowDimensions(); // Get screen width
   const isWeb = Platform.OS === 'web';
   const { setSearchQuery, setSelectedType } = useFilters(); // <-- ADD THIS
-  const theme = useTheme(); // <-- ADD THIS
+  const theme = useTheme(); // <-- theme for colors
   // Determine the number of columns based on width
   const getNumColumns = () => {
     if (!isWeb) {
@@ -72,7 +72,7 @@ export default function ActivityListScreen() {
 if (loading) {
   // Show skeleton loaders that respect the number of columns
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <FlatList
         data={[1, 2, 3]} // Render 3 skeleton items
         keyExtractor={(item) => item.toString()}
@@ -96,7 +96,7 @@ if (loading) {
                 </Text>
               )}
             <Text variant="titleMedium" style={styles.resultsHeader}>
-              Results
+              Results ({filteredActivities.length} of {total})
             </Text>
           </>
         }
@@ -106,7 +106,7 @@ if (loading) {
 }
 
   return (
-    <View style={styles.container}>
+  <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <FlatList
         data={filteredActivities}
         renderItem={renderActivityCard}
@@ -126,9 +126,22 @@ if (loading) {
             </Text>
             <FilterBar />
             <Text variant="titleMedium" style={styles.resultsHeader}>
-              Results
+              Results ({filteredActivities.length} of {total})
             </Text>
           </>
+        }
+        ListFooterComponent={
+          hasMore ? (
+            <View style={styles.footer}>
+              {isLoadingMore ? (
+                <ActivityIndicator />
+              ) : (
+                <Button mode="outlined" onPress={loadMore}>
+                  Load more
+                </Button>
+              )}
+            </View>
+          ) : null
         }
         ListEmptyComponent={
   <View style={styles.center}>
@@ -206,5 +219,10 @@ const styles = StyleSheet.create({
   },
   emptyButton: {
     marginTop: 16,
+  },
+  footer: {
+    paddingVertical: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

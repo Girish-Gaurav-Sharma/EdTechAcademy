@@ -1,7 +1,8 @@
 // src/features/activities/components/ActivityCard/ActivityCard.tsx
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Card, Text, Chip, Button, Avatar, useTheme } from 'react-native-paper';
+import { Card, Text, Button, Avatar, useTheme } from 'react-native-paper';
+import BrandedChip from '../../../../shared/components/Chip/BrandedChip';
 import { Activity, ActivityType } from '../../../../types/activity.types'; // Adjust path as needed
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 // Define the props our component will accept
@@ -119,13 +120,11 @@ const ActivityCard = ({ activity, onPress }: ActivityCardProps) => {
       <Card.Content>
         {/* Status and Tag Chips */}
         <View style={styles.chipContainer}>
-          <Chip icon="check-circle" mode="flat" style={styles.statusChip}>
-            {status}
-          </Chip>
-          {tags.slice(0, 2).map((tag) => ( // Show first 2 tags
-            <Chip key={tag} mode="outlined" style={styles.tagChip}>
+          <BrandedChip style={styles.statusChip}>{status}</BrandedChip>
+          {tags.slice(0, 2).map((tag) => (
+            <BrandedChip key={tag} style={styles.tagChip}>
               {tag}
-            </Chip>
+            </BrandedChip>
           ))}
         </View>
 

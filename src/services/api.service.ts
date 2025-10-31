@@ -9,7 +9,20 @@ interface ActivityFilters {
     type?: string | 'all';
 }
 
-export const fetchActivities = async (filters: ActivityFilters): Promise<Activity[]> => {
+interface PaginationOptions {
+    limit?: number;
+    offset?: number;
+}
+
+export interface ActivitiesResponse {
+    items: Activity[];
+    total: number;
+}
+
+export const fetchActivities = async (
+    filters: ActivityFilters,
+    pagination?: PaginationOptions
+): Promise<ActivitiesResponse> => {
     // 1. Create a URLSearchParams object to build the query string
     const params = new URLSearchParams();
 
@@ -21,7 +34,15 @@ export const fetchActivities = async (filters: ActivityFilters): Promise<Activit
         params.append('type', filters.type);
     }
 
-    // 3. Build the final URL
+    // 3. Add pagination if provided
+    if (pagination?.limit !== undefined) {
+        params.append('limit', String(pagination.limit));
+    }
+    if (pagination?.offset !== undefined) {
+        params.append('offset', String(pagination.offset));
+    }
+
+    // 4. Build the final URL
     const url = `${API_URL}/activities?${params.toString()}`;
 
     try {
@@ -29,9 +50,13 @@ export const fetchActivities = async (filters: ActivityFilters): Promise<Activit
         if (!response.ok) {
             throw new Error(`API error: ${response.statusText}`);
         }
-        return response.json();
+        const json = await response.json();
+        // Ensure shape
+        const items: Activity[] = Array.isArray(json.items) ? json.items : [];
+        const total: number = typeof json.total === 'number' ? json.total : items.length;
+        return { items, total };
     } catch (error) {
         console.error('Failed to fetch activities:', error);
-        return []; // Return an empty array on error
+        return { items: [], total: 0 }; // Empty response on error
     }
 };
