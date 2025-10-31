@@ -2,13 +2,15 @@
 import React from 'react';
 // --- IMPORT Platform and useWindowDimensions ---
 import { StyleSheet, FlatList, View, Platform, useWindowDimensions } from 'react-native';
-import { Text, ActivityIndicator, Switch, useTheme } from 'react-native-paper';
+import { Text, ActivityIndicator, Switch, useTheme, Button } from 'react-native-paper';
 import ActivityCard from '../features/activities/components/ActivityCard';
 import { Activity } from '../types/activity.types';
 import { useActivities } from '../contexts/ActivityContext';
 import FilterBar from '../features/filters/components/FilterBar/FilterBar';
 import { useThemeToggle } from '../contexts/ThemeContext';
-
+import { SkeletonCard } from '../features/activities/components/SkeletonCard/SkeletonCard'; // Adjust path
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useFilters } from '../contexts/FilterContext'; // Adjust path
 const ThemeToggle = () => {
   const { isDarkMode, toggleTheme } = useThemeToggle();
   const theme = useTheme(); // Get colors from Paper
@@ -29,7 +31,8 @@ export default function ActivityListScreen() {
   // --- START: RESPONSIVENESS LOGIC ---
   const { width } = useWindowDimensions(); // Get screen width
   const isWeb = Platform.OS === 'web';
-
+  const { setSearchQuery, setSelectedType } = useFilters(); // <-- ADD THIS
+  const theme = useTheme(); // <-- ADD THIS
   // Determine the number of columns based on width
   const getNumColumns = () => {
     if (!isWeb) {
@@ -66,13 +69,36 @@ export default function ActivityListScreen() {
     );
   };
 
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+if (loading) {
+  // Show skeleton loaders that respect the number of columns
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={[1, 2, 3]} // Render 3 skeleton items
+        keyExtractor={(item) => item.toString()}
+        numColumns={numColumns}
+        key={numColumns} // Match the real FlatList
+        renderItem={() => (
+          <View style={{ flex: 1 }}>
+            <SkeletonCard />
+          </View>
+        )}
+        ListHeaderComponent={
+          <>
+            <ThemeToggle />
+            <Text variant="headlineMedium" style={styles.header}>
+              Your Learning Activities
+            </Text>
+            <FilterBar />
+            <Text variant="titleMedium" style={styles.resultsHeader}>
+              Results
+            </Text>
+          </>
+        }
+      />
+    </View>
+  );
+}
 
   return (
     <View style={styles.container}>
@@ -100,11 +126,30 @@ export default function ActivityListScreen() {
           </>
         }
         ListEmptyComponent={
-          <View style={styles.center}>
-            <Text variant="titleMedium">No activities found.</Text>
-            <Text variant="bodyMedium">Try adjusting your filters.</Text>
-          </View>
-        }
+  <View style={styles.center}>
+    <MaterialCommunityIcons
+      name="magnify-remove-outline"
+      size={64}
+      color={theme.colors.onSurfaceDisabled}
+    />
+    <Text variant="titleMedium" style={styles.emptyTitle}>
+      No activities found
+    </Text>
+    <Text variant="bodyMedium" style={styles.emptyBody}>
+      Try adjusting your search or filters.
+    </Text>
+    <Button
+      mode="text"
+      onPress={() => {
+        setSearchQuery('');
+        setSelectedType('all');
+      }}
+      style={styles.emptyButton}
+    >
+      Clear Filters
+    </Button>
+  </View>
+}
       />
     </View>
   );
@@ -140,5 +185,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 4,
     paddingHorizontal: 16,
+  },
+  emptyTitle: {
+    marginTop: 16,
+  },
+  emptyBody: {
+    marginTop: 4,
+  },
+  emptyButton: {
+    marginTop: 16,
   },
 });

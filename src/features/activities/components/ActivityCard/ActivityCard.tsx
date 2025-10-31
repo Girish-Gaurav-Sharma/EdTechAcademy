@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Card, Text, Chip, Button, Avatar, useTheme } from 'react-native-paper';
 import { Activity, ActivityType } from '../../../../types/activity.types'; // Adjust path as needed
-
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 // Define the props our component will accept
 type ActivityCardProps = {
   activity: Activity;
@@ -12,22 +12,40 @@ type ActivityCardProps = {
 
 // --- Helper Sub-Component 1: ActivityIcon ---
 // This component returns the correct icon based on the activity type
+// --- Helper Sub-Component 1: ActivityIcon (Corrected) ---
+// --- Helper Sub-Component 1: ActivityIcon (Corrected) ---
 const ActivityIcon = ({ type }: { type: ActivityType }) => {
-  const iconName = () => {
+  const theme = useTheme();
+
+  const getIconName = (): React.ComponentProps<typeof MaterialCommunityIcons>['name'] => {
     switch (type) {
       case 'online-class':
-        return 'video'; // Icon for class
+        return 'presentation-play';
       case 'assignment':
-        return 'file-document-edit'; // Icon for assignment
+        return 'file-document-outline';
       case 'quiz':
-        return 'lightbulb-on'; // Icon for quiz
+        return 'beaker-question-outline';
       case 'discussion':
-        return 'forum'; // Icon for discussion
+        return 'forum-outline';
       default:
-        return 'help-circle'; // Fallback
+        return 'help-circle-outline';
     }
   };
-  return <Avatar.Icon size={40} icon={iconName()} style={styles.icon} />;
+
+  return (
+    <Avatar.Icon
+      size={40}
+      style={styles.icon}
+      // Pass a render function to the 'icon' prop
+      icon={(props) => (
+        <MaterialCommunityIcons
+          name={getIconName()}
+          size={24} // Use a fixed size
+          color={theme.colors.primary} // Use the theme's primary color
+        />
+      )}
+    />
+  );
 };
 
 // --- Helper Sub-Component 2: CardDetails ---
