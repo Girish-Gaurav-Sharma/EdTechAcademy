@@ -8,7 +8,7 @@ import { fetchActivities } from '../services/api.service'; // Import our new API
 interface ActivityContextType {
   filteredActivities: Activity[];
   loading: boolean;
-  // We no longer provide 'allActivities' since the server handles it
+  isInitialLoad: boolean;
 }
 
 // 2. Create the context
@@ -18,7 +18,7 @@ const ActivityContext = createContext<ActivityContextType | undefined>(undefined
 export const ActivityProvider = ({ children }: { children: React.ReactNode }) => {
   const { filters } = useFilters(); // Get the CURRENT filters
   const [loading, setLoading] = useState(true);
-  
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   // We ONLY need one list now: the list of filtered activities from the server
   const [filteredActivities, setFilteredActivities] = useState<Activity[]>([]);
 
@@ -48,7 +48,8 @@ export const ActivityProvider = ({ children }: { children: React.ReactNode }) =>
         console.error("Failed to load activities:", error);
         setFilteredActivities([]); // Set to empty array on error
       } finally {
-        setLoading(false); // Hide skeleton loaders
+        setLoading(false); 
+        setIsInitialLoad(false);// Hide skeleton loaders
       }
     };
 
@@ -61,7 +62,8 @@ export const ActivityProvider = ({ children }: { children: React.ReactNode }) =>
   const value = useMemo(() => ({
     filteredActivities,
     loading,
-  }), [filteredActivities, loading]);
+    isInitialLoad,
+  }), [filteredActivities, loading, isInitialLoad]);
 
   return (
     <ActivityContext.Provider value={value}>

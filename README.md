@@ -7,6 +7,20 @@
 
 ---
 
+## Deployment
+
+The application is deployed on Render:
+- **Frontend**: https://edtech-academy-web.onrender.com/
+- **Backend API**: https://edtechacademy-xzrs.onrender.com/api/activities
+
+---
+
+### Note on Render cold start
+
+The backend is hosted on Render’s free tier. The first request can take up to ~50 seconds while the server starts. The app includes a visible banner informing reviewers to wait during this initial spin-up. Subsequent requests are fast.
+
+---
+
 ## Project Overview
 
 This project implements an activity listing page for an EdTech Academy application. It features a responsive user interface that displays a scrollable list of activities with filtering capabilities. The application is built as a full-stack solution using React Native for cross-platform compatibility (web and mobile) and a Node.js backend for server-side data handling.
@@ -110,18 +124,6 @@ npm test
 ```
 
 Tests cover component rendering, user interactions, and utility functions.
-
----
-
-## Deployment
-
-The application is deployed on Render:
-- **Frontend**: https://edtech-academy-web.onrender.com/
-- **Backend API**: https://edtechacademy-xzrs.onrender.com/api/activities
-
-### Note on Render cold start
-
-The backend is hosted on Render’s free tier. If the service has been idle, the first request can take up to ~50 seconds while the server starts. The app includes a visible banner informing reviewers to wait during this initial spin-up. Subsequent requests are fast.
 
 ---
 

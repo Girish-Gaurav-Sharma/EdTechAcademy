@@ -26,7 +26,7 @@ const ThemeToggle = () => {
 };
 
 export default function ActivityListScreen() {
-  const { filteredActivities, loading } = useActivities();
+  const { filteredActivities, loading , isInitialLoad} = useActivities();
 
   // --- START: RESPONSIVENESS LOGIC ---
   const { width } = useWindowDimensions(); // Get screen width
@@ -90,6 +90,11 @@ if (loading) {
               Your Learning Activities
             </Text>
             <FilterBar />
+            {isInitialLoad && (
+                <Text style={[styles.coldStartMessage, { color: theme.colors.error }]}>
+                  Please wait 30-60s. The free backend server is coldstarting.....
+                </Text>
+              )}
             <Text variant="titleMedium" style={styles.resultsHeader}>
               Results
             </Text>
@@ -185,6 +190,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 4,
     paddingHorizontal: 16,
+  },
+  coldStartMessage: { 
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 17,
+    marginHorizontal: 16,
+    marginTop: 8,
   },
   emptyTitle: {
     marginTop: 16,
