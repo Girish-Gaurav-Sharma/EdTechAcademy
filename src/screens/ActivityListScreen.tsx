@@ -1,6 +1,5 @@
 // src/screens/ActivityListScreen.tsx
 import React from 'react';
-// --- IMPORT Platform and useWindowDimensions ---
 import { StyleSheet, FlatList, View, Platform, useWindowDimensions } from 'react-native';
 import { Text, ActivityIndicator, useTheme, Button } from 'react-native-paper';
 import ActivityCard from '../features/activities/components/ActivityCard';
@@ -8,36 +7,34 @@ import { Activity } from '../types/activity.types';
 import { useActivities } from '../contexts/ActivityContext';
 import FilterBar from '../features/filters/components/FilterBar/FilterBar';
 import SectionHeader from '../shared/components/SectionHeader';
-// Removed old theme toggle switch; header provides a modern toggle
-import { SkeletonCard } from '../features/activities/components/SkeletonCard/SkeletonCard'; // Adjust path
+import { SkeletonCard } from '../features/activities/components/SkeletonCard/SkeletonCard';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useFilters } from '../contexts/FilterContext'; // Adjust path
-// Theme toggle moved to header actions
+import { useFilters } from '../contexts/FilterContext'; 
+
 
 export default function ActivityListScreen() {
   const { filteredActivities, total, loading , isInitialLoad, isLoadingMore, hasMore, loadMore } = useActivities();
 
-  // --- START: RESPONSIVENESS LOGIC ---
-  const { width } = useWindowDimensions(); // Get screen width
+  const { width } = useWindowDimensions();
   const isWeb = Platform.OS === 'web';
-  const { setSearchQuery, setSelectedType } = useFilters(); // <-- ADD THIS
-  const theme = useTheme(); // <-- theme for colors
-  // Determine the number of columns based on width
+  const { setSearchQuery, setSelectedType } = useFilters(); 
+  const theme = useTheme();
+  
   const getNumColumns = () => {
     if (!isWeb) {
-      return 1; // Always 1 column on native (iOS/Android)
+      return 1; 
     }
     if (width < 768) {
-      return 1; // 1 column for small browser windows
+      return 1; 
     }
     if (width < 1200) {
-      return 2; // 2 columns for medium browser windows (tablet)
+      return 2;
     }
-    return 3; // 3 columns for large browser windows (desktop)
+    return 3;
   };
 
   const numColumns = getNumColumns();
-  // --- END: RESPONSIVENESS LOGIC ---
+  
 
 
   const renderActivityCard = ({ item }: { item: Activity }) => {
@@ -45,8 +42,6 @@ export default function ActivityListScreen() {
       console.log('Pressed:', activity.title);
     };
     
-    // This style is important for multi-column layout
-    // It makes each card take up its share of the space
     const cardStyle = {
       flex: 1,
     };
@@ -59,14 +54,13 @@ export default function ActivityListScreen() {
   };
 
 if (loading) {
-  // Show skeleton loaders that respect the number of columns
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <FlatList
-        data={[1, 2, 3]} // Render 3 skeleton items
+        data={[1, 2, 3]} 
         keyExtractor={(item) => item.toString()}
         numColumns={numColumns}
-        key={numColumns} // Match the real FlatList
+        key={numColumns} 
         renderItem={() => (
           <View style={{ flex: 1 }}>
             <SkeletonCard />
@@ -97,11 +91,8 @@ if (loading) {
         data={filteredActivities}
         renderItem={renderActivityCard}
         keyExtractor={(item) => item.id}
-        
-        // --- ADD THESE TWO PROPS ---
-        numColumns={numColumns} // Tell the FlatList how many columns to render
-        key={numColumns}        // CRITICAL: This forces a re-render when numColumns changes
-        // -----------------------------
+        numColumns={numColumns}
+        key={numColumns}
 
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={
@@ -179,9 +170,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
     marginTop: 50,
-  },
-  themeToggleContainer: {
-    // deprecated: old switch-based toggle removed in favor of header icon
   },
   coldStartMessage: { 
     textAlign: 'center',

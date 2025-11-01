@@ -3,10 +3,10 @@ import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Searchbar, Text, useTheme } from 'react-native-paper';
 import BrandedChip from '../../../../shared/components/Chip/BrandedChip';
-import { useFilters } from '../../../../contexts/FilterContext'; // Adjust path
-import { ActivityType } from '../../../../types/activity.types'; // Adjust path
-import { formatActivityTypeLabel } from '../../../../utils/formatters'; // Adjust path
-// Define the filter options
+import { useFilters } from '../../../../contexts/FilterContext'; 
+import { ActivityType } from '../../../../types/activity.types'; 
+import { formatActivityTypeLabel } from '../../../../utils/formatters'; 
+
 const filterTypes: (ActivityType | 'all')[] = [
   'all',
   'online-class',
@@ -17,7 +17,7 @@ const filterTypes: (ActivityType | 'all')[] = [
 
 
 export default function FilterBar() {
-  // Get the state and setters from our context
+  
   const { filters, setSearchQuery, setSelectedType } = useFilters();
   const { colors } = useTheme();
 
@@ -26,8 +26,8 @@ export default function FilterBar() {
       {/* 1. The Search Bar */}
       <Searchbar
         placeholder="Search activities..."
-        onChangeText={setSearchQuery} // Set state on change
-        value={filters.searchQuery}  // Controlled component
+        onChangeText={setSearchQuery} 
+        value={filters.searchQuery}
         style={[styles.searchbar, { backgroundColor: colors.surface }]}
       />
 

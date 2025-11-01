@@ -3,18 +3,15 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Card, Text, Button, Avatar, useTheme } from 'react-native-paper';
 import BrandedChip from '../../../../shared/components/Chip/BrandedChip';
-import { Activity, ActivityType } from '../../../../types/activity.types'; // Adjust path as needed
+import { Activity, ActivityType } from '../../../../types/activity.types'; 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-// Define the props our component will accept
+
 type ActivityCardProps = {
   activity: Activity;
-  onPress: (activity: Activity) => void; // Pass the activity back on press
+  onPress: (activity: Activity) => void; 
 };
 
-// --- Helper Sub-Component 1: ActivityIcon ---
-// This component returns the correct icon based on the activity type
-// --- Helper Sub-Component 1: ActivityIcon (Corrected) ---
-// --- Helper Sub-Component 1: ActivityIcon (Corrected) ---
+
 const ActivityIcon = ({ type }: { type: ActivityType }) => {
   const theme = useTheme();
 
@@ -37,20 +34,18 @@ const ActivityIcon = ({ type }: { type: ActivityType }) => {
     <Avatar.Icon
       size={40}
       style={styles.icon}
-      // Pass a render function to the 'icon' prop
       icon={(props) => (
         <MaterialCommunityIcons
           name={getIconName()}
-          size={24} // Use a fixed size
-          color={theme.colors.primary} // Use the theme's primary color
+          size={24} 
+          color={theme.colors.primary} 
         />
       )}
     />
   );
 };
 
-// --- Helper Sub-Component 2: CardDetails ---
-// This uses the Discriminated Union to show specific details
+
 const CardDetails = ({ activity }: { activity: Activity }) => {
   const { colors } = useTheme();
   const detailStyle = [styles.detailText, { color: colors.onSurfaceVariant }];
@@ -85,11 +80,10 @@ const CardDetails = ({ activity }: { activity: Activity }) => {
   }
 };
 
-// --- Main ActivityCard Component ---
+
 const ActivityCard = ({ activity, onPress }: ActivityCardProps) => {
   const { title, program, status, tags } = activity;
 
-  // Helper to get the correct button text based on status
   const getActionText = () => {
     switch (status) {
       case 'not-started':
@@ -106,19 +100,18 @@ const ActivityCard = ({ activity, onPress }: ActivityCardProps) => {
   };
 
   return (
-    // We use React Native Paper's Card component
+    
     <Card style={styles.card} onPress={() => onPress(activity)}>
-      {/* 1. HEADER: Icon, Title, and Subtitle (Program) */}
+
       <Card.Title
         title={title}
-        titleNumberOfLines={2} // Prevent long titles from breaking layout
+        titleNumberOfLines={2} 
         subtitle={program}
         left={(props) => <ActivityIcon type={activity.type} {...props} />}
       />
 
-      {/* 2. CONTENT: Chips and Specific Details */}
+
       <Card.Content>
-        {/* Status and Tag Chips */}
         <View style={styles.chipContainer}>
           <BrandedChip style={styles.statusChip}>{status}</BrandedChip>
           {tags.slice(0, 2).map((tag) => (
@@ -128,13 +121,13 @@ const ActivityCard = ({ activity, onPress }: ActivityCardProps) => {
           ))}
         </View>
 
-        {/* Conditional Details (using our helper) */}
+
         <View style={styles.detailsContainer}>
           <CardDetails activity={activity} />
         </View>
       </Card.Content>
 
-      {/* 3. ACTIONS: The main "call to action" button */}
+
       <Card.Actions>
         <Button mode="contained" onPress={() => onPress(activity)}>
           {getActionText()}
@@ -144,14 +137,14 @@ const ActivityCard = ({ activity, onPress }: ActivityCardProps) => {
   );
 };
 
-// 4. STYLES
+
 const styles = StyleSheet.create({
   card: {
     marginHorizontal: 16,
     marginVertical: 8,
   },
   icon: {
-    backgroundColor: 'transparent', // Icon background looks better clear
+    backgroundColor: 'transparent',
   },
   chipContainer: {
     flexDirection: 'row',
@@ -168,7 +161,7 @@ const styles = StyleSheet.create({
   },
   detailsContainer: {
     marginTop: 8,
-    minHeight: 40, // Give a consistent height even if details are short
+    minHeight: 40,
   },
   detailText: {
     marginBottom: 4,

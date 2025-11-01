@@ -1,10 +1,9 @@
 // src/contexts/ActivityContext.tsx
 import React, { createContext, useState, useContext, useMemo, useEffect, useCallback } from 'react';
-import type { Activity } from '../types/activity.types'; // Import the type
-import { useFilters } from './FilterContext'; // Import the filter hook
-import { fetchActivities } from '../services/api.service'; // Import our new API service
+import type { Activity } from '../types/activity.types'; 
+import { useFilters } from './FilterContext'; 
+import { fetchActivities } from '../services/api.service'; 
 
-// 1. Define what this context will provide
 interface ActivityContextType {
   filteredActivities: Activity[];
   total: number;
@@ -15,12 +14,10 @@ interface ActivityContextType {
   loadMore: () => Promise<void>;
 }
 
-// 2. Create the context
 const ActivityContext = createContext<ActivityContextType | undefined>(undefined);
 
-// 3. Create the Provider component
 export const ActivityProvider = ({ children }: { children: React.ReactNode }) => {
-  const { filters } = useFilters(); // Get the CURRENT filters
+  const { filters } = useFilters(); 
   const [loading, setLoading] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [filteredActivities, setFilteredActivities] = useState<Activity[]>([]);
@@ -30,10 +27,8 @@ export const ActivityProvider = ({ children }: { children: React.ReactNode }) =>
 
   const LIMIT = 12;
 
-  // 4. THE NEW CORE LOGIC:
-  // This useEffect hook now runs whenever the 'filters' object changes.
+  
   useEffect(() => {
-    // Reset and load first page whenever filters change
     const loadFirstPage = async () => {
       setLoading(true);
       setOffset(0);
@@ -80,7 +75,7 @@ export const ActivityProvider = ({ children }: { children: React.ReactNode }) =>
     }
   }, [filters, isLoadingMore, loading, hasMore, offset]);
 
-  // 5. Memoize the value to provide
+
   const value = useMemo(() => ({
     filteredActivities,
     total,
@@ -98,7 +93,6 @@ export const ActivityProvider = ({ children }: { children: React.ReactNode }) =>
   );
 };
 
-// 6. Create a custom hook for easy access
 export const useActivities = () => {
   const context = useContext(ActivityContext);
   if (!context) {

@@ -3,7 +3,6 @@ import React from 'react';
 import { Chip, ChipProps, useTheme } from 'react-native-paper';
 
 type Props = ChipProps & {
-  // no extra props, wrapper to enforce consistent styling
 };
 
 export const BrandedChip: React.FC<Props> = ({ selected, mode, style, textStyle, ...rest }) => {

@@ -6,7 +6,6 @@ type Props = {
   size?: number;
 };
 
-// Simple profile icon. No logic/state.
 export const ProfileAvatar: React.FC<Props> = ({ size = 36 }) => {
   const { colors } = useTheme();
   return (

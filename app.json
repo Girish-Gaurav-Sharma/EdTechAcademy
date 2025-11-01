@@ -25,7 +25,7 @@
     },
     "web": {
       "name": "EdTech Academy",
-      "favicon": "./assets/favicon.svg"
+      "favicon": "./assets/favicon.png"
     }
   }
 }

@@ -1,9 +1,8 @@
 // src/services/api.service.ts
 
 import { API_URL } from '../config';
-import type { Activity } from '../types/activity.types'; // Adjust path as needed
+import type { Activity } from '../types/activity.types'; 
 
-// Define the shape of the filters our function will accept
 interface ActivityFilters {
     search?: string;
     type?: string | 'all';
@@ -51,12 +50,11 @@ export const fetchActivities = async (
             throw new Error(`API error: ${response.statusText}`);
         }
         const json = await response.json();
-        // Ensure shape
         const items: Activity[] = Array.isArray(json.items) ? json.items : [];
         const total: number = typeof json.total === 'number' ? json.total : items.length;
         return { items, total };
     } catch (error) {
         console.error('Failed to fetch activities:', error);
-        return { items: [], total: 0 }; // Empty response on error
+        return { items: [], total: 0 }; 
     }
 };

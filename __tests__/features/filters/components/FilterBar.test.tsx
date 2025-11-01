@@ -1,15 +1,12 @@
 // __tests__/features/filters/components/FilterBar.test.tsx
 import React from 'react';
-// Import testing library tools
 import { render, fireEvent, screen } from '@testing-library/react-native';
 import { PaperProvider } from 'react-native-paper';
 
-// We need to import the component and the provider it depends on
 import FilterBar from '../../../../src/features/filters/components/FilterBar/FilterBar';
 import { FilterProvider } from '../../../../src/contexts/FilterContext';
 
 const mockIcon = (props: any) => <></>;
-// Helper: A component test needs to be wrapped in its real providers
 const renderWithProviders = (component: React.ReactElement) => {
   return render(
     <PaperProvider settings={{ icon: mockIcon }}>

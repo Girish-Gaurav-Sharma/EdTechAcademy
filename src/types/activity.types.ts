@@ -16,13 +16,13 @@ export interface BaseActivity {
     status: ActivityStatus;
     priority: Priority;
     tags: string[];
-    createdAt: string; // Use ISO date strings (e.g., new Date().toISOString())
+    createdAt: string;
 }
 
 // 3. Specific fields for each activity type
 export interface OnlineClassFields {
     scheduledAt: string;
-    durationMinutes: number; // e.g., 60
+    durationMinutes: number; 
     instructor: string;
     meetingLink?: string;
     recordingUrl?: string;
@@ -56,16 +56,14 @@ export interface DiscussionFields {
 
 // 4. Optional progress for 'in-progress' items
 export interface ProgressInfo {
-    progressPercent: number; // 0-100
+    progressPercent: number;
     lastAccessedAt: string;
 }
 
 // 5. The Discriminated Union:
-// This is the main type you will use everywhere.
-// It combines the BaseActivity with the specific fields based on the 'type' property.
 export type Activity = BaseActivity & (
     | ({ type: 'online-class' } & OnlineClassFields)
     | ({ type: 'assignment' } & AssignmentFields)
     | ({ type: 'quiz' } & QuizFields)
     | ({ type: 'discussion' } & DiscussionFields)
-) & Partial<ProgressInfo>; // Progress is optional for any activity
+) & Partial<ProgressInfo>; 

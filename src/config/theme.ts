@@ -1,16 +1,13 @@
 // src/config/theme.ts
-// Centralized theme configuration using React Native Paper MD3 theme as a base
 import { MD3DarkTheme as DefaultDarkTheme, MD3LightTheme as DefaultLightTheme } from 'react-native-paper';
 
-// Professional palette tokens
-// Core hues inspired by: Navy Blue, Black, Charcoal Gray, White/Off-white
 const palette = {
-    navy: '#0B3D91', // primary brand
+    navy: '#0B3D91', 
     navyLight: '#2C5FBF',
     black: '#000000',
-    offWhite: '#F8FAFC', // very light off-white for backgrounds
+    offWhite: '#F8FAFC',
     white: '#FFFFFF',
-    charcoal900: '#111827', // deepest charcoal for dark surfaces
+    charcoal900: '#111827',
     charcoal800: '#1F2937',
     charcoal700: '#374151',
     gray300: '#D1D5DB',
@@ -22,26 +19,18 @@ export const lightTheme = {
     ...DefaultLightTheme,
     colors: {
         ...DefaultLightTheme.colors,
-        // Brand
         primary: palette.navy,
         onPrimary: palette.white,
-
-        // App surfaces
         background: palette.offWhite,
-        onBackground: '#1F2937', // charcoal-800 for readable text
+        onBackground: '#1F2937', 
         surface: palette.white,
-        onSurface: '#111827', // charcoal-900 for prominent text
+        onSurface: '#111827',
         surfaceVariant: palette.gray150,
-        onSurfaceVariant: '#4B5563', // muted charcoal
-
-        // Outlines / dividers
+        onSurfaceVariant: '#4B5563',
         outline: palette.gray300,
         outlineVariant: palette.gray200,
-
-        // Other slots Paper/MD3 may use
         secondary: palette.charcoal700,
         onSecondary: palette.white,
-        // MD3 container roles (used by components such as Chips/Buttons in certain modes)
         primaryContainer: '#E6EEFA',
         onPrimaryContainer: palette.navy,
         secondaryContainer: '#E9EEF5',
@@ -55,7 +44,7 @@ export const lightTheme = {
             level5: '#F5F5F5',
         },
     },
-    // Subtle typography enhancements for a cleaner, more confident look
+    
     fonts: {
         ...DefaultLightTheme.fonts,
         headlineMedium: {
@@ -81,22 +70,16 @@ export const darkTheme = {
     ...DefaultDarkTheme,
     colors: {
         ...DefaultDarkTheme.colors,
-        // Brand
-        primary: palette.navyLight, // a slightly brighter navy for dark backgrounds
+        primary: palette.navyLight, 
         onPrimary: palette.white,
-
-        // App surfaces (lean into black and charcoals)
         background: palette.black,
         onBackground: palette.gray200,
         surface: palette.charcoal900,
         onSurface: palette.gray200,
         surfaceVariant: palette.charcoal800,
         onSurfaceVariant: '#9CA3AF',
-
-        // Outlines / dividers
         outline: '#3F3F46',
         outlineVariant: '#27272A',
-
         secondary: '#94A3B8',
         onSecondary: palette.black,
         primaryContainer: '#0F2F6F',
@@ -112,7 +95,6 @@ export const darkTheme = {
             level5: '#090E19',
         },
     },
-    // Mirror the font emphasis in dark mode
     fonts: {
         ...DefaultDarkTheme.fonts,
         headlineMedium: {

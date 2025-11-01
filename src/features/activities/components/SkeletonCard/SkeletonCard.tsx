@@ -3,14 +3,13 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Card, useTheme } from 'react-native-paper';
 
-// A simple, non-animated skeleton shape
 const SkeletonBlock = ({ style }: { style: any }) => {
   const { colors } = useTheme();
   return (
     <View
       style={[
         styles.skeleton,
-        { backgroundColor: colors.surfaceVariant }, // Use a theme color
+        { backgroundColor: colors.surfaceVariant }, 
         style,
       ]}
     />
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 40,
     height: 40,
-    borderRadius: 20, // Make it round
+    borderRadius: 20,
     marginRight: 12,
   },
   chipContainer: {

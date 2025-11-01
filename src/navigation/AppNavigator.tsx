@@ -8,10 +8,8 @@ import { useTheme, IconButton } from 'react-native-paper';
 import { View, useWindowDimensions, StyleSheet } from 'react-native';
 import { useThemeToggle } from '../contexts/ThemeContext';
 import ProfileAvatar from '../shared/components/Profile/ProfileAvatar';
-// Define the type for your stack parameters
 export type RootStackParamList = {
-  ActivityList: undefined; // No parameters expected for this screen
-  // Add other screens here later, e.g.: ActivityDetail: { id: string }
+  ActivityList: undefined; 
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -19,7 +17,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 export default function AppNavigator() {
   const theme = useTheme();
   const { width } = useWindowDimensions();
-  // Responsive sizing for header items
+  
   const isWide = width >= 1200;
   const isTablet = width >= 768 && width < 1200;
   const headerPadding = isWide ? 32 : isTablet ? 24 : 12;
@@ -40,7 +38,6 @@ export default function AppNavigator() {
     </View>
   );
   return (
-    // NavigationContainer must wrap your entire navigation structure
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
@@ -59,12 +56,12 @@ export default function AppNavigator() {
           component={ActivityListScreen}
           options={{
             headerTitle: () => <Logo size={logoFontSize} />,
-            headerTitleAlign: 'center', // Center the logo
+            headerTitleAlign: 'center', 
             headerLeft: () => <ProfileAvatar size={avatarSize} />,
             headerRight: () => <ThemeToggleButton />,
             headerLeftContainerStyle: { paddingLeft: 8 },
             headerRightContainerStyle: { paddingRight: 8 },
-          }} // This will be the header title
+          }} 
         />
       </Stack.Navigator>
     </NavigationContainer>

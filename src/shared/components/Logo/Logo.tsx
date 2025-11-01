@@ -2,9 +2,8 @@
 import React from 'react';
 import { useTheme, Text } from 'react-native-paper';
 
-// Wordmark logo: "EdTech Academy" with brand accent on "EdTech"
 type Props = {
-  size?: number; // optional font size for responsiveness
+  size?: number; 
 };
 
 export const Logo: React.FC<Props> = ({ size }) => {

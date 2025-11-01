@@ -1,10 +1,8 @@
 // __tests__/utils/formatters.test.ts
-import { formatActivityTypeLabel } from '../../src/utils/formatters'; // Adjust path
+import { formatActivityTypeLabel } from '../../src/utils/formatters'; 
 
-// describe groups tests together
 describe('formatActivityTypeLabel', () => {
 
-    // 'test' or 'it' defines a single test casenpm install @types/jest --save-dev
     test('should format "all"', () => {
         expect(formatActivityTypeLabel('all')).toBe('All');
     });

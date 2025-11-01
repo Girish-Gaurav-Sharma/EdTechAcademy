@@ -1,9 +1,6 @@
 // src/data/mockData.ts
 import type { Activity } from '../types/activity.types.js';
 
-// Rich, hand-crafted dummy data for meaningful pagination and realistic scenarios
-// Dates are ISO strings; statuses and fields vary intentionally across items.
-
 export const mockData: Activity[] = [
     // ---------------------- ONLINE CLASSES ----------------------
     {
