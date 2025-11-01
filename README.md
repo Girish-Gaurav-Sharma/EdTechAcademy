@@ -3,7 +3,7 @@
 ## Submission for Great Learning (Fullstack Role)
 
 **Submitted by:** Girish Gaurav Sharma  
-**Date:** October 31, 2025
+**Date:** Nov 1, 2025
 
 ---
 
@@ -319,9 +319,7 @@ This screenshot shows the network requests being made to the backend API, demons
 - [x] Deployment links
 - [x] Screenshots added to README
 
-**Repository Link:** [GitHub Repository URL]  
+**Repository Link:** https://github.com/Girish-Gaurav-Sharma/EdTechAcademy 
 **Live Frontend URL:** https://edtech-academy-web.onrender.com/
 
 ---
-
-This submission demonstrates a complete, production-ready implementation meeting all project requirements with professional code quality and documentation.
