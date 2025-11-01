@@ -78,41 +78,198 @@ The project fulfills all specified core requirements and additional features:
 
 ## Installation and Setup
 
-This is a monorepo project requiring concurrent execution of frontend and backend.
+This project has two parts: a React Native (Expo) app and a Node/Express API. Run them in separate terminals.
 
 ### Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn
-- Expo CLI (for mobile development)
+- Node.js 18 LTS or newer (recommended)
+- npm (bundled with Node) or Yarn
+- macOS/iOS: Xcode + iOS Simulator (for running on iOS)
 
-### Backend Setup
-1. Navigate to the server directory:
-   ```
-   cd server
-   ```
-2. Install dependencies:
-   ```
-   npm install
-   ```
-3. Start the development server:
-   ```
-   npm run dev
-   ```
-   The API will be available at `http://localhost:8080`.
+Verify versions:
 
-### Frontend Setup
-1. From the project root, install dependencies:
-   ```
-   npm install
-   ```
-2. For web development:
-   ```
-   npm run web
-   ```
-3. For iOS simulator:
-   ```
-   npm run ios
-   ```
+```bash
+node -v
+npm -v
+```
+
+If you plan to run the iOS simulator, open Xcode at least once to complete setup.
+
+---
+
+### 1) Backend (API) – Local
+
+The API is an Express server with TypeScript and runs on port 8080 by default.
+
+```bash
+# Terminal A
+cd server
+npm install
+npm run dev
+```
+
+You should see: "Server running on http://localhost:8080".
+
+Endpoint you can curl in another terminal:
+
+```bash
+curl "http://localhost:8080/api/activities?limit=5"
+```
+
+---
+
+### 2) Frontend (Expo)
+
+Install dependencies at the project root:
+
+```bash
+# Terminal B (project root)
+npm install
+```
+
+The app reads the API URL from an environment variable during development:
+
+- Variable name: `EXPO_PUBLIC_API_URL`
+- Used in `src/config/index.ts`
+- In dev (`__DEV__`), the app uses `EXPO_PUBLIC_API_URL`
+- In production (web build or native release), it falls back to the deployed URL: `https://edtechacademy-xzrs.onrender.com/api`
+
+#### Option A: Use local API
+
+```bash
+EXPO_PUBLIC_API_URL=http://localhost:8080/api npm run web
+```
+
+#### Option B: Use deployed API (no local server needed)
+
+```bash
+EXPO_PUBLIC_API_URL=https://edtechacademy-xzrs.onrender.com/api npm run web
+```
+
+To open the iOS simulator instead of web:
+
+```bash
+EXPO_PUBLIC_API_URL=http://localhost:8080/api npm run ios
+```
+
+Expo will start Metro Bundler and open the browser UI. Press `w` for web, `i` for iOS if not auto-opened.
+
+---
+
+### Quick Start (copy/paste)
+
+```bash
+# Terminal A – API
+cd server && npm install && npm run dev
+
+# Terminal B – App (use local API)
+cd ..
+EXPO_PUBLIC_API_URL=http://localhost:8080/api npm run web
+```
+
+---
+
+### Scripts reference
+
+Frontend (at project root)
+- `npm start`: Expo dev server (choose platform interactively)
+- `npm run web`: Expo for web
+- `npm run ios`: Expo for iOS simulator
+- `npm test`: Jest unit/component tests
+
+Backend (in `server/`)
+- `npm run dev`: Start API with nodemon + ts-node
+- `npm run build`: TypeScript build to `server/build`
+- `npm start`: Run compiled API from `server/build`
+
+---
+
+### Troubleshooting
+
+- Backend cold start (Render): First request may take up to ~50s. The app shows a banner; wait and retry.
+- Metro/Expo cache issues:
+  ```bash
+  rm -rf node_modules
+  npm install
+  # start fresh cache
+  EXPO_PUBLIC_API_URL=http://localhost:8080/api npx expo start --clear
+  ```
+- iOS setup: Ensure Xcode and Command Line Tools are installed. From Expo Dev Tools, press `i` to launch the simulator.
+
+If you get no data in dev, confirm `EXPO_PUBLIC_API_URL` is set and the backend terminal shows request logs.
+
+---
+
+## Project structure
+
+```
+.
+├── app.json                      
+├── App.tsx                       
+├── index.ts                      
+├── jest.config.js                
+├── package.json                  
+├── README.md
+├── tsconfig.json                 # TypeScript config
+├── __tests__                     # Unit/component tests
+│   ├── features
+│   │   └── filters
+│   │       └── components
+│   │           └── FilterBar.test.tsx
+│   └── utils
+│       └── formatters.test.ts
+├── assets
+│   └── screenshots               # Docs screenshots
+├── server                        # Node/Express API (TypeScript)
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── src
+│       ├── index.ts              
+│       ├── data
+│       │   └── mockData.ts       
+│       └── types
+│           └── activity.types.ts
+└── src                           # Frontend app source
+   ├── config                    # App config and theme
+   │   ├── index.ts
+   │   └── theme.ts
+   ├── contexts                  # React Context providers
+   │   ├── ActivityContext.tsx
+   │   ├── FilterContext.tsx
+   │   └── ThemeContext.tsx
+   ├── features                  # Feature modules and UI
+   │   ├── activities
+   │   │   └── components
+   │   │       ├── ActivityCard
+   │   │       │   ├── ActivityCard.tsx
+   │   │       │   └── index.ts
+   │   │       └── SkeletonCard
+   │   │           └── SkeletonCard.tsx
+   │   └── filters
+   │       └── components
+   │           └── FilterBar
+   │               └── FilterBar.tsx
+   ├── navigation
+   │   └── AppNavigator.tsx      
+   ├── screens
+   │   └── ActivityListScreen.tsx 
+   ├── services
+   │   └── api.service.ts        # API client
+   ├── shared
+   │   └── components            # Reusable UI components
+   │       ├── Chip
+   │       │   └── BrandedChip.tsx
+   │       ├── Logo
+   │       │   └── Logo.tsx
+   │       ├── Profile
+   │       │   └── ProfileAvatar.tsx
+   │       └── SectionHeader
+   │           ├── index.ts
+   │           └── SectionHeader.tsx
+   ├── types
+   │   └── activity.types.ts     # Shared TS types
+   └── utils
+      └── formatters.ts        
+```
 
 ---
 
@@ -129,7 +286,23 @@ Tests cover component rendering, user interactions, and utility functions.
 
 ## Screenshots
 
-[Add screenshots here showing the application interface, filtering functionality, and responsive design across different screen sizes.]
+### Web
+
+| Light Mode | Dark Mode |
+| :---: | :---: |
+| ![Web Light Mode](assets/screenshots/web-light.png) | ![Web Dark Mode](assets/screenshots/web-dark.png) |
+
+### Mobile
+
+| Dark Mode | Light Mode |
+| :---: | :---: |
+| ![Mobile Light Mode](assets/screenshots/mobile-light.png) | ![Mobile Dark Mode](assets/screenshots/mobile-dark.png) |
+
+### Backend and Network
+
+This screenshot shows the network requests being made to the backend API, demonstrating the server-side filtering in action.
+
+![Backend Network Activity](assets/screenshots/backend-network.png)
 
 ---
 
