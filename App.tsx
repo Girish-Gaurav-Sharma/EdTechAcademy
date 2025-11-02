@@ -53,6 +53,6 @@ const styles = StyleSheet.create({
     // @ts-ignore: '100vh' is a valid web-only style for height
     height: Platform.OS === 'web' ? '100vh' : '100%',
     // @ts-ignore: 'overflowY' is a valid web-only style
-    overflowY: Platform.OS === 'web' ? 'auto' : 'visible',
+    overflowY: Platform.OS === 'web' ? 'scroll' : 'visible',
   },
 });
