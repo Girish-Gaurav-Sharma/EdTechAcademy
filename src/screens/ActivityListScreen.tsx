@@ -1,7 +1,7 @@
 // src/screens/ActivityListScreen.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, FlatList, View, Platform, useWindowDimensions } from 'react-native';
-import { Text, ActivityIndicator, useTheme, Button } from 'react-native-paper';
+import { Text, ActivityIndicator, useTheme, Button, Snackbar, Portal } from 'react-native-paper';
 import ActivityCard from '../features/activities/components/ActivityCard';
 import { Activity } from '../types/activity.types';
 import { useActivities } from '../contexts/ActivityContext';
@@ -19,7 +19,9 @@ export default function ActivityListScreen() {
   const isWeb = Platform.OS === 'web';
   const { setSearchQuery, setSelectedType } = useFilters(); 
   const theme = useTheme();
-  
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarText, setSnackbarText] = useState('');
+  const [snackbarId, setSnackbarId] = useState(0); 
   const getNumColumns = () => {
     if (!isWeb) {
       return 1; 
@@ -41,6 +43,12 @@ export default function ActivityListScreen() {
     const handlePress = (activity: Activity) => {
       console.log('Pressed:', activity.title);
     };
+
+    const handleActionPress = (activity: Activity) => {
+      setSnackbarText('Feature not implemented');
+      setSnackbarId((k) => k + 1);
+      setSnackbarVisible(true);
+    };
     
     const cardStyle = {
       flex: 1,
@@ -48,7 +56,7 @@ export default function ActivityListScreen() {
 
     return (
       <View style={cardStyle}>
-        <ActivityCard activity={item} onPress={handlePress} />
+        <ActivityCard activity={item} onPress={handlePress} onActionPress={handleActionPress} />
       </View>
     );
   };
@@ -66,6 +74,7 @@ if (loading) {
             <SkeletonCard />
           </View>
         )}
+        contentContainerStyle={[styles.listContent, styles.listHorizontalPadding]}
         ListHeaderComponent={
           <>
             <SectionHeader title="Your Learning Activities" />
@@ -81,6 +90,17 @@ if (loading) {
           </>
         }
       />
+      <Portal>
+        <Snackbar
+          key={snackbarId}
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          duration={2000}
+          style={isWeb ? styles.webSnackbar : undefined}
+        >
+          {snackbarText}
+        </Snackbar>
+      </Portal>
     </View>
   );
 }
@@ -93,8 +113,7 @@ if (loading) {
         keyExtractor={(item) => item.id}
         numColumns={numColumns}
         key={numColumns}
-
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[styles.listContent, styles.listHorizontalPadding]}
         ListHeaderComponent={
           <>
             <SectionHeader title="Your Learning Activities" />
@@ -118,31 +137,42 @@ if (loading) {
           ) : null
         }
         ListEmptyComponent={
-  <View style={styles.center}>
-    <MaterialCommunityIcons
-      name="magnify-remove-outline"
-      size={64}
-      color={theme.colors.onSurfaceDisabled}
-    />
-    <Text variant="titleMedium" style={styles.emptyTitle}>
-      No activities found
-    </Text>
-    <Text variant="bodyMedium" style={styles.emptyBody}>
-      Try adjusting your search or filters.
-    </Text>
-    <Button
-      mode="text"
-      onPress={() => {
-        setSearchQuery('');
-        setSelectedType('all');
-      }}
-      style={styles.emptyButton}
-    >
-      Clear Filters
-    </Button>
-  </View>
-}
+          <View style={styles.center}>
+            <MaterialCommunityIcons
+              name="magnify-remove-outline"
+              size={64}
+              color={theme.colors.onSurfaceDisabled}
+            />
+            <Text variant="titleMedium" style={styles.emptyTitle}>
+              No activities found
+            </Text>
+            <Text variant="bodyMedium" style={styles.emptyBody}>
+              Try adjusting your search or filters.
+            </Text>
+            <Button
+              mode="text"
+              onPress={() => {
+                setSearchQuery('');
+                setSelectedType('all');
+              }}
+              style={styles.emptyButton}
+            >
+              Clear Filters
+            </Button>
+          </View>
+        }
       />
+      <Portal>
+        <Snackbar
+          key={snackbarId}
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          duration={2000}
+          style={isWeb ? styles.webSnackbar : undefined}
+        >
+          {snackbarText}
+        </Snackbar>
+      </Portal>
     </View>
   );
 }
@@ -154,6 +184,9 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 16,
     flexGrow: 1,
+  },
+  listHorizontalPadding: {
+    paddingHorizontal: 8,
   },
   header: {
     marginTop: 16,
@@ -191,5 +224,12 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  webSnackbar: {
+    // @ts-ignore: RN Web supports 'position: fixed'
+    position: 'fixed',
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });

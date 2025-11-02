@@ -43,7 +43,6 @@ export default function AppNavigator() {
         screenOptions={{
           headerStyle: {
             backgroundColor: theme.colors.surface,
-            paddingHorizontal: headerPadding,
             borderBottomWidth: StyleSheet.hairlineWidth,
             borderBottomColor: theme.colors.outline,
           },
@@ -59,8 +58,9 @@ export default function AppNavigator() {
             headerTitleAlign: 'center', 
             headerLeft: () => <ProfileAvatar size={avatarSize} />,
             headerRight: () => <ThemeToggleButton />,
-            headerLeftContainerStyle: { paddingLeft: 8 },
-            headerRightContainerStyle: { paddingRight: 8 },
+            headerLeftContainerStyle: { paddingLeft: headerPadding },
+            headerRightContainerStyle: { paddingRight: headerPadding },
+            headerTitleContainerStyle: { marginHorizontal: headerPadding },
           }} 
         />
       </Stack.Navigator>

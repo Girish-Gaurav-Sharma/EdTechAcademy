@@ -1,14 +1,16 @@
 // src/features/activities/components/ActivityCard/ActivityCard.tsx
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Card, Text, Button, Avatar, useTheme } from 'react-native-paper';
+import { StyleSheet, View, Alert } from 'react-native';
+import { Card, Text, Button, Avatar, useTheme, ProgressBar } from 'react-native-paper';
 import BrandedChip from '../../../../shared/components/Chip/BrandedChip';
 import { Activity, ActivityType } from '../../../../types/activity.types'; 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { formatDate, formatDateTime, formatDuration, formatActivityTypeLabel, formatScore } from '../../../../utils/formatters';
 
 type ActivityCardProps = {
   activity: Activity;
-  onPress: (activity: Activity) => void; 
+  onPress: (activity: Activity) => void;
+  onActionPress?: (activity: Activity) => void; 
 };
 
 
@@ -57,23 +59,43 @@ const CardDetails = ({ activity }: { activity: Activity }) => {
           <Text variant="bodyMedium" style={detailStyle}>
             Instructor: {activity.instructor}
           </Text>
-          <Text variant="bodyMedium" style={detailStyle}>
-            On: {new Date(activity.scheduledAt).toLocaleDateString()}
+          <Text variant="bodyMedium" style={detailStyle} numberOfLines={1}>
+            When: {formatDateTime(activity.scheduledAt)}{activity.durationMinutes ? ` • ${formatDuration(activity.durationMinutes)}` : ''}{activity.isLive ? ' • Live' : ''}
           </Text>
         </>
       );
     case 'assignment':
+      return (
+        <>
+          <Text variant="bodyMedium" style={detailStyle}>
+            Due: {formatDate(activity.dueDate)}
+          </Text>
+          <Text variant="bodyMedium" style={detailStyle} numberOfLines={1}>
+            {typeof activity.earnedScore === 'number' ? `Score: ${formatScore(activity.earnedScore, activity.maxScore)}` : `Max: ${activity.maxScore} pts`}
+          </Text>
+        </>
+      );
     case 'quiz':
       return (
-        <Text variant="bodyMedium" style={detailStyle}>
-          Due: {new Date(activity.dueDate).toLocaleDateString()}
-        </Text>
+        <>
+          <Text variant="bodyMedium" style={detailStyle} numberOfLines={1}>
+            Due: {formatDate(activity.dueDate)} • {formatDuration(activity.durationMinutes)}
+          </Text>
+          <Text variant="bodyMedium" style={detailStyle} numberOfLines={1}>
+            Qs: {activity.questionCount} • Att: {activity.attemptsUsed ?? 0}/{activity.attemptsAllowed}
+          </Text>
+        </>
       );
     case 'discussion':
       return (
-        <Text variant="bodyMedium" style={detailStyle}>
-          Replies: {activity.replyCount}
-        </Text>
+        <>
+          <Text variant="bodyMedium" style={detailStyle}>
+            Replies: {activity.replyCount}
+          </Text>
+          <Text variant="bodyMedium" style={detailStyle} numberOfLines={1}>
+            Last: {formatDateTime(activity.lastActivityAt)}
+          </Text>
+        </>
       );
     default:
       return null;
@@ -81,8 +103,8 @@ const CardDetails = ({ activity }: { activity: Activity }) => {
 };
 
 
-const ActivityCard = ({ activity, onPress }: ActivityCardProps) => {
-  const { title, program, status, tags } = activity;
+const ActivityCard = ({ activity, onPress, onActionPress }: ActivityCardProps) => {
+  const { title, program, status, tags, priority, description, progressPercent } = activity;
 
   const getActionText = () => {
     switch (status) {
@@ -112,24 +134,46 @@ const ActivityCard = ({ activity, onPress }: ActivityCardProps) => {
 
 
       <Card.Content>
-        <View style={styles.chipContainer}>
-          <BrandedChip style={styles.statusChip}>{status}</BrandedChip>
-          {tags.slice(0, 2).map((tag) => (
-            <BrandedChip key={tag} style={styles.tagChip}>
-              {tag}
-            </BrandedChip>
-          ))}
-        </View>
+        <View style={styles.contentWrapper}>
+          {!!description && (
+            <Text variant="bodyMedium" numberOfLines={2} style={styles.description}>
+              {description}
+            </Text>
+          )}
 
+          <View style={styles.chipContainer}>
+            <BrandedChip style={styles.statusChip}>{status}</BrandedChip>
+            <BrandedChip style={styles.priorityChip}>{priority}</BrandedChip>
+            <BrandedChip style={styles.typeChip}>{formatActivityTypeLabel(activity.type)}</BrandedChip>
+          </View>
 
-        <View style={styles.detailsContainer}>
-          <CardDetails activity={activity} />
+          <View style={styles.detailsContainer}>
+            <CardDetails activity={activity} />
+          </View>
+
+          <View style={styles.progressContainer}>
+            <ProgressBar progress={Math.max(0, Math.min(1, (progressPercent ?? 0) / 100))} />
+            <Text variant="labelSmall" style={styles.progressLabel}>
+              {typeof progressPercent === 'number' ? `${progressPercent}% complete` : ' '}
+            </Text>
+          </View>
         </View>
       </Card.Content>
 
 
       <Card.Actions>
-        <Button mode="contained" onPress={() => onPress(activity)}>
+        <Button
+          mode="contained"
+          onPress={() => {
+            if (onActionPress) {
+              onActionPress(activity);
+            } else {
+              Alert.alert('Not implemented', 'This action is not available yet.');
+            }
+          }}
+          accessibilityLabel="Primary action (not implemented)"
+          testID="activity-primary-action"
+        >
           {getActionText()}
         </Button>
       </Card.Actions>
@@ -140,7 +184,7 @@ const ActivityCard = ({ activity, onPress }: ActivityCardProps) => {
 
 const styles = StyleSheet.create({
   card: {
-    marginHorizontal: 16,
+    marginHorizontal: 8,
     marginVertical: 8,
   },
   icon: {
@@ -149,9 +193,17 @@ const styles = StyleSheet.create({
   chipContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   statusChip: {
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  priorityChip: {
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  typeChip: {
     marginRight: 8,
     marginBottom: 8,
   },
@@ -160,11 +212,30 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   detailsContainer: {
-    marginTop: 8,
-    minHeight: 40,
+    marginTop: 6,
   },
   detailText: {
-    marginBottom: 4,
+    marginBottom: 3,
+  },
+  description: {
+    marginBottom: 6,
+  },
+  contentWrapper: {
+    minHeight: 150,
+  },
+  liveChip: {
+    marginTop: 4,
+    alignSelf: 'flex-start',
+  },
+  participatedChip: {
+    marginTop: 4,
+    alignSelf: 'flex-start',
+  },
+  progressContainer: {
+    marginTop: 6,
+  },
+  progressLabel: {
+    marginTop: 3,
   },
 });
 
