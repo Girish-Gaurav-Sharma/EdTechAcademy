@@ -1,16 +1,17 @@
 // src/features/activities/components/ActivityCard/ActivityCard.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Alert } from 'react-native';
 import { Card, Text, Button, Avatar, useTheme, ProgressBar } from 'react-native-paper';
 import BrandedChip from '../../../../shared/components/Chip/BrandedChip';
-import { Activity, ActivityType } from '../../../../types/activity.types'; 
+import { Activity, ActivityType } from '../../../../types/activity.types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { formatDate, formatDateTime, formatDuration, formatActivityTypeLabel, formatScore } from '../../../../utils/formatters';
+import { useActivities } from '../../../../contexts/ActivityContext';
 
 type ActivityCardProps = {
   activity: Activity;
   onPress: (activity: Activity) => void;
-  onActionPress?: (activity: Activity) => void; 
+  onActionPress?: (activity: Activity) => void;
 };
 
 
@@ -39,8 +40,8 @@ const ActivityIcon = ({ type }: { type: ActivityType }) => {
       icon={(props) => (
         <MaterialCommunityIcons
           name={getIconName()}
-          size={24} 
-          color={theme.colors.primary} 
+          size={24}
+          color={theme.colors.primary}
         />
       )}
     />
@@ -105,7 +106,7 @@ const CardDetails = ({ activity }: { activity: Activity }) => {
 
 const ActivityCard = ({ activity, onPress, onActionPress }: ActivityCardProps) => {
   const { title, program, status, tags, priority, description, progressPercent } = activity;
-
+  const { toggleFavorite, isFavorite } = useActivities();
   const getActionText = () => {
     switch (status) {
       case 'not-started':
@@ -121,13 +122,15 @@ const ActivityCard = ({ activity, onPress, onActionPress }: ActivityCardProps) =
     }
   };
 
+  const getFavText = () => (isFavorite(activity.id) ? 'FAV' : 'NOT FAV');
+
   return (
-    
+
     <Card style={styles.card} onPress={() => onPress(activity)}>
 
       <Card.Title
         title={title}
-        titleNumberOfLines={2} 
+        titleNumberOfLines={2}
         subtitle={program}
         left={(props) => <ActivityIcon type={activity.type} {...props} />}
       />
@@ -157,6 +160,14 @@ const ActivityCard = ({ activity, onPress, onActionPress }: ActivityCardProps) =
               {typeof progressPercent === 'number' ? `${progressPercent}% complete` : ' '}
             </Text>
           </View>
+          <Button
+            mode="contained"
+            onPress={() => toggleFavorite(activity)}
+            accessibilityLabel={isFavorite(activity.id) ? 'Remove from favorites' : 'Add to favorites'}
+            testID={`fav-toggle-${activity.id}`}
+          >
+            {getFavText()}
+          </Button>
         </View>
       </Card.Content>
 

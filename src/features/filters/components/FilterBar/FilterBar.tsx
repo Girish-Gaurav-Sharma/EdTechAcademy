@@ -3,9 +3,9 @@ import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Searchbar, Text, useTheme } from 'react-native-paper';
 import BrandedChip from '../../../../shared/components/Chip/BrandedChip';
-import { useFilters } from '../../../../contexts/FilterContext'; 
-import { ActivityType } from '../../../../types/activity.types'; 
-import { formatActivityTypeLabel } from '../../../../utils/formatters'; 
+import { useFilters } from '../../../../contexts/FilterContext';
+import { ActivityType } from '../../../../types/activity.types';
+import { formatActivityTypeLabel } from '../../../../utils/formatters';
 
 const filterTypes: (ActivityType | 'all')[] = [
   'all',
@@ -17,8 +17,7 @@ const filterTypes: (ActivityType | 'all')[] = [
 
 
 export default function FilterBar() {
-  
-  const { filters, setSearchQuery, setSelectedType } = useFilters();
+  const { filters, setSearchQuery, setSelectedType, setFavoriteFilter } = useFilters();
   const { colors } = useTheme();
 
   return (
@@ -26,7 +25,7 @@ export default function FilterBar() {
       {/* 1. The Search Bar */}
       <Searchbar
         placeholder="Search activities..."
-        onChangeText={setSearchQuery} 
+        onChangeText={setSearchQuery}
         value={filters.searchQuery}
         style={[styles.searchbar, { backgroundColor: colors.surface }]}
       />
@@ -45,6 +44,20 @@ export default function FilterBar() {
             testID={`filter-chip-${type}`}
           >
             {formatActivityTypeLabel(type)}
+          </BrandedChip>
+        ))}
+      </ScrollView>
+      <Text variant="labelLarge" style={[styles.filterTitle, { marginTop: 8 }]}>Favorites</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        {(['all', 'fav', 'not-fav'] as const).map((fav) => (
+          <BrandedChip
+            key={fav}
+            selected={filters.favoriteFilter === fav}
+            onPress={() => setFavoriteFilter(fav)}
+            style={styles.chip}
+            testID={`favorite-chip-${fav}`}
+          >
+            {fav === 'all' ? 'All' : fav === 'fav' ? 'Favorites' : 'Not favorites'}
           </BrandedChip>
         ))}
       </ScrollView>
